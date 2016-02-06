@@ -307,9 +307,14 @@ public class AutoBackup{
 		Date date = new Date();
 		String ext = FilenameUtils.getExtension(saveFile.getName());
 		String fileNameWithoutExt = saveFile.getName().replace(ext,"");
-		fileNameWithoutExt = fileNameWithoutExt.substring(0,fileNameWithoutExt.length()-1);
-		
-		String fullPath = backupFolder.getPath() + "/" + fileNameWithoutExt + "_" + dateFormat.format(date) + "."+ ext;
+		String fullPath;
+		if (saveFile.isFile()) {
+			fileNameWithoutExt = fileNameWithoutExt.substring(0,fileNameWithoutExt.length()-1);
+			 fullPath = backupFolder.getPath() + "/" + fileNameWithoutExt + "_" + dateFormat.format(date);
+			 fullPath = fullPath + "."+ ext;
+		}else {
+			 fullPath = backupFolder.getPath() + "/" + fileNameWithoutExt + "_" + dateFormat.format(date);
+		}
 		if (OsUtils.isWindows()) {
 			OsUtils.MakeWinPath(fullPath);
 		}
@@ -334,7 +339,14 @@ public class AutoBackup{
 	}
 	
 	public File[] getOldestFile () {
-		File directory = new File(backupFolder.getPath() + "/");
+		String path = backupFolder.getPath() + "/";
+		if (OsUtils.isWindows()) {
+			OsUtils.MakeWinPath(path);
+		}
+		
+		File directory = new File(path);
+		
+		
 		ArrayList<File> filesList = new ArrayList<File>();
 		
 		for(File file : directory.listFiles()) {
